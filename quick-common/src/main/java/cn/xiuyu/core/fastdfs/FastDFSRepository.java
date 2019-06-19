@@ -65,7 +65,6 @@ public class FastDFSRepository {
             metaList[0] = new NameValuePair("fileName", fileName);
             metaList[1] = new NameValuePair("fileExtName", fileExtName);
             metaList[2] = new NameValuePair("fileLength", String.valueOf(fileLength));
-
             String path = client.upload_file1(FileUtils.getFileByte(file), fileExtName, metaList);
             client.close();
             return path;

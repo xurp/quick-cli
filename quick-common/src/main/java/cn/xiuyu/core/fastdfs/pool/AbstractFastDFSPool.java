@@ -75,7 +75,7 @@ public class AbstractFastDFSPool implements FastDFSPool {
                         } else {
                             // TODO 前置回调
                             Object invoke = method.invoke(client, args);
-                            // TODO 后置回掉
+                            // TODO 后置回调
                             return invoke;
                         }
                         return null;

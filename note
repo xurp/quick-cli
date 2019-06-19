@@ -1,0 +1,27 @@
+quick-common：
+1. fastdfs_client.conf：配置了tracker_server,port和charset
+        注:FastDFS的两个核心概念分别是：Tracker（跟踪器）、Storage（存储节点）.跟踪器Tracker主要做调度工作，相当于controller，在访问上起负载均衡的作用。
+        跟踪器和存储节点都可以由一台或多台服务器构成，跟踪器和存储节点中的服务器均可以随时增加或下线而不会影响线上服务，其中跟踪器中的所有服务器都是对等的
+        跟踪器Tracker负责管理所有的Storage和group，每个Storage在启动后会连接Tracker，告知自己所属的group等信息.
+        存储节点Storage采用了分卷[Volume]（或分组[group]）的组织方式，存储系统由一个或多个组组成，一个卷（组）可以由一台或多台存储服务器组成
+2. 配置文件:配置了druid,jpa,rabbitmq(本来还有redis,好像被作者删了)
+3. util包:MD5加密,JWT是使用了auth-0的jwt,有生成token,验证token,从token读取user等方法,File是在FastDFSRepository上传时获取file的byte(也有用file.getContent()的)
+4. configuration包：FastDFSConfiguration返回自定义的AbstractFastDFSPool.redis的已经被废弃.
+5. fastdfs包:FastDFSRepository用来操作文件,如上传下载删除.
+6. pool包:FastDFSPool是数据源接口,主要获取client.AbstractFastDFSPool实现该接口,主要作为连接池.FastDFSClient是接口,AbstractFastDFSClient实现接口并继承StorageClient1
+   StorageClient1是fastDFS自带的,有上传等方法,所以AbstractFastDFSClient主要实现接口多出来的方法比如ping.FastDFSFactory生成AbstractFastDFSClient.实际上抽象类就是Storage
+7. base包:BaseModel是数据模型的基类
+8. service.base包:一个CRUD的接口类
+总结:主要提供了fastFDS的使用(本来还有redis),一些工具类,一些基类和中间件的配置文件
+
+quick-front(架构图中,本项目由quick-manager订阅dubbo,由dubbo通知本项目)
+1. application:使用了@EnableDubboConfiguration
+2. properties:front里配置了项目port,jpa和rabbitmq.dubbo里配置了dubbo的常规配置(似乎本项目作为dubbo的server?因为指定了传输协议spring.dubbo.protocol.name=dubbo).
+3. configure:WebApplicationDubboConfigure使用了@PropertySource("dubbo-webapp.properties"),这是引入properties文件,最后应该还要在实体类属性上加@value
+    ServletConfigure配置了druid(配置Druid的监控--配置一个管理后台的Servlet),和seckill的DruidConfig类似.FilterConfigure配置了跨域和druid忽略资源等,后者也可以放在ServletConfigure
+4. data:MVCResult是controller里的返回类
+5. filter:CrossOriginFIlter做了一个跨域的filter,主要是拦截并设置一些http的header.其中Access-Control-Allow-Origin可能有问题,可查询网络资料
+总结:这个子项目有点奇怪,不知道干嘛的,authentication包里的三个controller都注释了,也没有dubbo-server里实现dubbo api接口的类
+
+quick-manager(架构图见上面front的)
+1. 

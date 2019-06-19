@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+// [注]:@MappedSuperclass将实体类当成基类实体，它不会隐射到数据库表，但继承它的子类实体在隐射时会自动扫描该基类实体的隐射属性，添加到子类实体的对应数据库表中。
 @MappedSuperclass
 public class BaseModel implements Serializable {
 
