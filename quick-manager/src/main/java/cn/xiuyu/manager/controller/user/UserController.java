@@ -116,6 +116,7 @@ public class UserController {
      * @param username
      * @return
      */
+    // [注]:这里获取路由不知道干嘛的
     @RequestMapping(value = "getRouter")
     public MVCResult getRouter(@RequestParam("username") String username) {
 
@@ -126,6 +127,7 @@ public class UserController {
             // 去重
             List<Object> result = new ArrayList<>();
             Set<ResourceModel> topResourceSet = new HashSet<>();
+            // [注]:forEach要多行时,用{}括起来就行了
             groupSet.stream().forEach(group -> {
                 Map<String, Object> resourceMap = new HashMap<>();
                 List<ResourceModel> topResourceList = groupService.findTopReourceByGroup(group.getId());

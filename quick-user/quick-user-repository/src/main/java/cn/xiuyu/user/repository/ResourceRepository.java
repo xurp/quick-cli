@@ -19,6 +19,7 @@ public interface ResourceRepository extends JpaRepository<ResourceModel, Integer
      * 根据组 查询顶级资源
      * @return
      */
+    // [注]:原生sql,用:groupId注入
     @Query(value = " select ar.* from authentication_resource ar left join authentication_group_resource_relation agrr on agrr.resource_name = ar.id\r\n"
             + "left join authentication_group ag on ag.id = agrr.group_name where  ar.parent is null  and ag.id = :groupId", nativeQuery = true)
     List<ResourceModel> findTopReourceByGroup(@Param("groupId") Integer groupId);

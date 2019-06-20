@@ -36,6 +36,7 @@ public class GroupModel extends BaseModel {
 	private String description;
 
 	// 用户
+	// [注]:组和用户--多对多
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = TableConstant.AUTHENTICATION + "user_group_relation", joinColumns = {
 			@JoinColumn(name = "group_name") }, inverseJoinColumns = { @JoinColumn(name = "user_name") })

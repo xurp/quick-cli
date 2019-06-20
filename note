@@ -16,12 +16,70 @@ quick-common：
 
 quick-front(架构图中,本项目由quick-manager订阅dubbo,由dubbo通知本项目)
 1. application:使用了@EnableDubboConfiguration
-2. properties:front里配置了项目port,jpa和rabbitmq.dubbo里配置了dubbo的常规配置(似乎本项目作为dubbo的server?因为指定了传输协议spring.dubbo.protocol.name=dubbo).
+2. properties:front里配置了项目port,jpa和rabbitmq.dubbo里配置了dubbo的常规配置(指定了传输协议spring.dubbo.protocol.name=dubbo).
 3. configure:WebApplicationDubboConfigure使用了@PropertySource("dubbo-webapp.properties"),这是引入properties文件,最后应该还要在实体类属性上加@value
     ServletConfigure配置了druid(配置Druid的监控--配置一个管理后台的Servlet),和seckill的DruidConfig类似.FilterConfigure配置了跨域和druid忽略资源等,后者也可以放在ServletConfigure
 4. data:MVCResult是controller里的返回类
 5. filter:CrossOriginFIlter做了一个跨域的filter,主要是拦截并设置一些http的header.其中Access-Control-Allow-Origin可能有问题,可查询网络资料
-总结:这个子项目有点奇怪,不知道干嘛的,authentication包里的三个controller都注释了,也没有dubbo-server里实现dubbo api接口的类
+总结:这个子项目有点奇怪,不知道干嘛的,authentication包里的三个controller都注释了
 
 quick-manager(架构图见上面front的)
-1. 
+1. application:使用了@EnableDubbo,@DubboComponentScan和@PropertySource
+2. properties:一个文件指定了项目port,以及强制使用cglib作代理(在application被引入),另一个和front的dubbo配置类似,在ManagerDubboConfigure被引入
+3. configure:ManagerApplicationConfigure也是配置跨域,ManagerDubboConfigure读取properties并保存配置对象避免重复创建,然后用代理获得User,Group和Resource三个Service,不知为什么.
+    ManagerDubboConfigure是标准的dubbo配置类.ManagerShiroConfigure配置Shiro,没细看,可参考.(PS网上评论,哪个公司会把权限代码让你写?). ManagerSwagger2简单配置swagger
+4. controller:里面的TestController通过注入quick-user-service里的类,调用该类的test方法. 
+5. stateless:StatelessAuthenticationController实际上是loginController
+6. user:三个controller,group是用户组,resource是处理资源,user就是CRUD了
+7. data:MVCResult和front一样,StatelessAuthenticationToken用来返回认证信息,只有一个值就是token(get/set)
+8. filter和shiro:似乎和https://www.cnblogs.com/onetwo/p/6755786.html比较类似
+    ManagerCORSFilter和front的CrossOriginFIlter一样,StatelessAccessControlFilter是认证过滤器
+          似乎是验证token是否合法.StatelessAuthorizingRealm是用于认证的realm,StatelessDefaultSubjectFactory是用来设置shiro不用session认证用户.
+          同样,shiro没细看
+总结:本项目有详细的shiro配置,以及三个controller,有可能类似dubbo-gateway,比如UserController里就注入了UserService(即api,在quick-user-interface,具体实现在quick-user-service)
+
+quick-message:
+1. 这个项目非常奇怪,似乎只有一个rabbitmq的配置文件.下属两个quick-message-*不用看了.
+
+quick-pai-model:
+1. 同上,什么文件都没
+
+quick-pay(架构图中和quick-user在一级里,怀疑就是API/SERVICE供别的子项目来消费的):
+1. 但其实它的子项目就是上面的,整个项目完全是空屁,是不是让我们自己做的
+
+从quick-scm到quick-sso:全部是空屁,让用户自己填写
+
+quick-user下属的四个:
+
+quick-user-interface:
+1. 三个service的API(和dubbo-api一样),实现了BaseService,注意api接口是不需要注解的
+
+quick-user-model:
+1. 三个继承了BaseModel的实体类,都是多对多,用jpa做
+
+quick-user-repository:
+1. 三个dao类,用jpa注解
+
+quick-user-service:
+1. application:@EnableDubbo+@DubboComponentScan.目前只有quick的项目用了这个注解
+2. configure:UserDubboConfigure引入properties文件,该文件里有spring.dubbo.server=true,网上资料说dubbo的消费者和提供者的配置文件要有这个,本项目只有提供者有这个
+3. impl:实现quick-user-interface(API)的接口.
+
+总结:quick-user下属的四个子子项目,interface是提供API,model和repository实际上都可以放在service里,service就是dubbo-server,作为提供者
+
+整个dubbo项目总结:
+本项目看似结构图画的很花,其实不完整.quick-user作为子项目,其四个子子项目实现了api和server,其中api是不需要配置文件的,只有server需要.
+另外很多空屁项目,就是模拟的业务子项目.quick-message是单独作为MQ的子项目,也是空屁.
+quick-manager就是gateway,并配置了shiro.
+quick-common主要提供了fastFDS的使用(本来还有redis),一些工具类,一些基类和中间件的配置文件
+quick-front有点奇怪,
+
+
+
+
+
+
+
+
+
+

@@ -33,6 +33,8 @@ import cn.xiuyu.user.service.UserService;
 @RestController
 public class TestController {
 
+	// [注]:这里用@Reference引入dubbo的Service,但controller.user包里是用autowired引入的,有说法是这两种都行,万一出现注入为null(可能是springboot+shiro引起的)就用另一种注入
+	// [注]:目前存疑,本项目中service的@Service用的是dubbo的注解
     @Reference
     private UserService userService;
 

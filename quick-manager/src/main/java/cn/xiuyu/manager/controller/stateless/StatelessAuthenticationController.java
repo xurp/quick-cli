@@ -46,6 +46,7 @@ public class StatelessAuthenticationController {
     @Autowired
     private UserService userService;
 
+    // [注]:和myspringboot的LoginController的login方法基本一样,不过这里返回的时候还把token包在result里返回了,前者似乎没有这么做
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public MVCResult login(@RequestParam("username") String username, @RequestParam("password") String password) {
         System.out.println("login....");

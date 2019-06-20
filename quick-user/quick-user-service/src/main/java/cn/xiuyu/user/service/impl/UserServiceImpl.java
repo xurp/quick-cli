@@ -41,6 +41,7 @@ import cn.xiuyu.user.service.UserService;
  * @modified [who date description]
  * @check [who date description]
  */
+// [注]:在timeout时间内没有返回结果，dubbo会默认重试，默认retries = 2
 @Service(interfaceClass = UserService.class, timeout = 5000)
 public class UserServiceImpl implements UserService {
 

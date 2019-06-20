@@ -44,6 +44,7 @@ import cn.xiuyu.user.service.GroupService;
  * @modified [who date description]
  * @check [who date description]
  */
+// [注]:使用dubbo的@Service还特地注明了接口类)
 @Service(interfaceClass = GroupService.class)
 public class GroupServiceImpl implements GroupService {
 
